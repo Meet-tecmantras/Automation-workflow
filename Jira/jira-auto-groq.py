@@ -5,17 +5,23 @@ import fitz  # PyMuPDF
 import docx
 import re
 from github import Github
+from dotenv import load_dotenv
+import os
 
 # === Configuration ===
-GROQ_API_KEY = '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'
-GROQ_MODEL = 'llama-3.3-70b-versatile'  # Or 'mixtral-8x7b-32768'
+# Load environment variables from .env file
+load_dotenv()
 
-GITHUB_TOKEN = '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'
-GITHUB_REPO = 'Meetsoni3591/Automation-testing'
-JIRA_BASE_URL = 'https://meets3591.atlassian.net'
-JIRA_EMAIL = 'meets3591@gmail.com'
-JIRA_API_TOKEN = 'ATATT3xFfGF0Qex0ZTs4usvL0tpf1uZ_B1B5TV0ucOLvX17OLz-BhK8jIpV_UKLElxszkKgfvFA8Lm5DLCgAX3TC6-KnOZm2zrhO5edT8NZhsiH9Y-wxybdz6MsuLUV5PkokWlna_WE84j6vg6jAkVgYZxLSV1e8wtbO8YtgoulB0rNAsPLPaDA=4D8BD475'
-JIRA_PROJECT_KEY = 'KAN'
+GROQ_API_KEY = os.getenv('GROQ_API_KEY')
+GROQ_MODEL = os.getenv('GROQ_MODEL')
+
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
+GITHUB_REPO = os.getenv('GITHUB_REPO')
+
+JIRA_BASE_URL = os.getenv('JIRA_BASE_URL')
+JIRA_EMAIL = os.getenv('JIRA_EMAIL')
+JIRA_API_TOKEN = os.getenv('JIRA_API_TOKEN')
+JIRA_PROJECT_KEY = os.getenv('JIRA_PROJECT_KEY')
 
 # === File Handling ===
 def extract_text_from_file(uploaded_file):
