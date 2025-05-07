@@ -110,7 +110,7 @@ def create_jira_task(summary, description, issue_type="Epic", parent_id=None):
         st.warning(f"⚠️ Issue type '{issue_type}' not found. Falling back to 'Task'.")
         issue_type = "Epic"
 
-    issue_type_name = "Task" if parent_id else issue_type
+    issue_type_name = "Task" if parent_id else issue_type       # for sub-tasks we need to use Task
 
     payload = {
         "fields": {
@@ -166,14 +166,39 @@ def create_github_branch(branch_name, base="main"):
 st.set_page_config(page_title="Project Planning Automation (Groq)", layout="wide")
 st.title("🧠 Project Planning Automation (Groq + Streamlit)")
 
-uploaded_file = st.file_uploader("📂 Upload your project doc (.pdf, .docx, .txt)", type=['pdf', 'docx', 'txt'])
+#  hinding the file uploader label cause it show 200MB limit but for Our Use case we need 12,000 chars limit
+# Custom CSS to hide the file uploader label
+hide_upload_label = """
+    <style>
+    .st-emotion-cache-c8ta4l.ejh2rmr0 {
+        display: none !important;
+    }
+    </style>
+"""
+
+# Inject the custom CSS
+st.markdown(hide_upload_label, unsafe_allow_html=True)
+
+# Custom label
+st.markdown("📁 **Upload your project doc (Max 12,000 chars for Ai  processing)**")
+
+# File uploader (still functional)
+uploaded_file = st.file_uploader("", type=["pdf", "docx", "txt"])
+
+MAX_CONTENT_LENGTH = 12000  # Adjust this based on Groq's token/char limit
+
 
 if uploaded_file:
     with st.spinner("📖 Reading and analyzing..."):
         content = extract_text_from_file(uploaded_file)
-        llama_response = analyze_with_groq(content)
+
+    if len(content) > MAX_CONTENT_LENGTH:
+        st.warning(f"⚠️ Uploaded file is too large! Only the first {MAX_CONTENT_LENGTH} token will be analyzed.")
+        content = content[:MAX_CONTENT_LENGTH]
 
     try:
+        llama_response = analyze_with_groq(content)
+        st.subheader("🧠 Groq Model Response")
         # Extract JSON from text using regex
         match = re.search(r"\{[\s\S]*\}", llama_response)
         if not match:
